@@ -1,4 +1,3 @@
-# breatheasy
 # BreatheEasy - Air Quality Monitor
 
 Android app created to help users see current air quality in their area and what it means to your health.  Uses Google Places and Google Maps API, as well as data from air quality data from aqicn.org
