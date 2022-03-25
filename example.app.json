@@ -1,0 +1,39 @@
+{
+    "expo": {
+      "name": "full name of app",
+      "slug": "expo identifier eg: app-name",
+      "platforms": [
+        "android",
+        "web"
+      ],
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "icon": "./assets/icon.png",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "updates": {
+        "fallbackToCacheTimeout": 0
+      },
+      "assetBundlePatterns": [
+        "**/*"
+      ],
+      "android": {
+        "package": "google play identifier goes here eg: com.example.app",
+        "versionCode": 1,
+        "config": {
+          "googleMaps":{
+            "apiKey": "google maps token"
+            
+          }
+        }
+      },
+      "extra": {
+            "PLACES_API_KEY": "google places/autocomplete token",
+            "WAQI_TOKEN": "aqicn.org token"
+          }
+    }
+  }
+  
