@@ -9,6 +9,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { getLocation } from '../services/location-service'
 import Constants from 'expo-constants'
+import getAqiMeta from '../helpers/colorHelper'
 
 export default class MainScreen extends React.Component {
 	constructor(props) {
@@ -77,39 +78,8 @@ export default class MainScreen extends React.Component {
 			.then((response) => response.json())
 			.then((responseJson) => {
 				var aqi = responseJson.data.aqi
-
-				//** Set the color of the banner depending on the AQI value
-				if (aqi <= 50) {
-					this.setState({
-						theNews: 'Good News!',
-						aqiColor: '#009966',
-					})
-				} else if (aqi <= 100) {
-					this.setState({
-						theNews: 'Moderate.',
-						aqiColor: '#ffde33',
-					})
-				} else if (aqi <= 150) {
-					this.setState({
-						theNews: 'Moderately Bad.',
-						aqiColor: '#ff9933',
-					})
-				} else if (aqi <= 200) {
-					this.setState({
-						theNews: 'Unhealthy.',
-						aqiColor: '#cc0033',
-					})
-				} else if (aqi <= 300) {
-					this.setState({
-						theNews: 'Very Unhealthy.',
-						aqiColor: '#660099',
-					})
-				} else if (aqi >= 300) {
-					this.setState({
-						theNews: 'Hazardous.',
-						aqiColor: '#7e0023',
-					})
-				}
+				const metaData = getAqiMeta(aqi)
+				this.setState(metaData)
 
 				/* Get the city name from the JSON, store it and the AQI in this.state */
 				var city = responseJson.data.city.name

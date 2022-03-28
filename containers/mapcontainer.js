@@ -1,51 +1,75 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'
 import MapInput from '../components/mapinput'
 import MyMapView from '../components/mapview'
 import { getLocation } from '../services/location-service'
+import getStations from '../services/stations'
 
-class MapContainer extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {}
-		}
-	
-	getCoordsFromName(loc) {
+const MapContainer = (props) => {
+	const { navigation } = props
+	const [initialRegion, setInitialRegion] = useState({})
+	const [initialBounds, setInitialBounds] = useState({})
+	const [initialStations, setInitialStations] = useState([])
+
+	useEffect(async () => {
+		await getLocation()
+			.then((location) => {
+				const { latitude, longitude } = location
+				const region = {
+					latitude,
+					longitude,
+					latitudeDelta: 0.15,
+					longitudeDelta: 0.15,
+				}
+				setInitialRegion(region)
+				return region
+			})
+			.then((region) => {
+				const bounds = {
+					topLeft: {
+						latitude: region.latitude + region.latitudeDelta / 2,
+						longitude: region.longitude - region.longitudeDelta / 2,
+					},
+					bottomRight: {
+						latitude: region.latitude - region.latitudeDelta / 2,
+						longitude: region.longitude + region.longitudeDelta / 2,
+					},
+				}
+				setInitialBounds(bounds)
+				return bounds
+			})
+			.then(async (bounds) => {
+				await getStations(bounds).then((stations) => {
+					('initialStations:',stations)
+					setInitialStations(stations)
+					return
+				})
+			})
+	}, [])
+
+	const getCoordsFromName = (loc) => {
 		const { lat, lng } = loc
-		const { navigation } = this.props
 		navigation.navigate('NewLocation', {
 			latitude: lat,
 			longitude: lng,
 		})
 	}
-	async componentDidMount() {
-		const location = await getLocation()
-		this.setState({
-			region: {
-				latitude: location.latitude,
-				longitude: location.longitude,
-				latitudeDelta: 0.003,
-				longitudeDelta: 0.003,
-			},
-		})
-	}
 
-	render() {
-		const { navigation } = this.props
-		return (
-			<View style={{ flex: 1 }}>
-				<View style={{ position: 'absolute', width: '100%', zIndex: 99 }}>
-					<MapInput notifyChange={(loc) => this.getCoordsFromName(loc)} />
-				</View>
-				{this.state.region ? (
-					<MyMapView
-						navigation={navigation}
-						initialRegion={this.state.region}
-					/>
-				) : null}
+	return (
+		<View style={{ flex: 1 }}>
+			<View style={{ position: 'absolute', width: '100%', zIndex: 99 }}>
+				<MapInput notifyChange={(loc) => getCoordsFromName(loc)} />
 			</View>
-		)
-	}
+			{initialRegion.latitude && initialRegion.longitude ? (
+				<MyMapView
+					navigation={navigation}
+					initialBounds={initialBounds}
+					initialRegion={initialRegion}
+					initialStations={initialStations}
+				/>
+			) : null}
+		</View>
+	)
 }
 
 export default MapContainer
